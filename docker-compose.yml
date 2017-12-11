@@ -1,7 +1,6 @@
 version: '2'
 networks:
-  lb_web:
-    external: true
+  front:
   back:
     driver: bridge
 services:
@@ -10,7 +9,7 @@ services:
     volumes:
       - ./mysql/runtime:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD
+      - MYSQL_ROOT_PASSWORD=secret
     networks:
     - back
   app:
@@ -23,6 +22,8 @@ services:
     - back
   web:
     image: nginx
+    ports:
+      - 80:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     links:
@@ -33,7 +34,7 @@ services:
       - VIRTUAL_HOST
     networks:
     - back
-    - lb_web
+    - front
   cron:
     image: piwik:fpm
     links:
